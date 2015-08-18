@@ -52,7 +52,6 @@ class IRCChat():
         """ Dispatch events to on_<event.type> method, if present.  """
         do_nothing = lambda c, e: None
         method = getattr(self, "on_" + event.type, do_nothing)
-        # print(event.type)
         method(connection, event)
 
     def on_ping(self, c, e):
@@ -62,7 +61,8 @@ class IRCChat():
         self.re_join(c.server)
 
     def on_motd(self, c, e):
-        self.re_join(c.server)
+        pass
+        # self.re_join(c.server)
 
     # def on_endofmotd(self, c, e):
     #     self.ping_received = True
@@ -192,8 +192,9 @@ class IRCChat():
     #=========================
 
     def on_join(self, c, e):
-        if e.target in self.server_connection[c.server]['pending_channel']:
-            self.server_connection[c.server]['pending_channel'].remove(e)
+        if 'pending_channel' in self.server_connection[c.server]:
+            if e.target in self.server_connection[c.server]['pending_channel']:
+                self.server_connection[c.server]['pending_channel'].remove(e)
 
         if not e.target in self.server_connection[c.server]['channel']:
             self.server_connection[c.server]['channel'].add(e.target)
@@ -247,14 +248,15 @@ class IRCChat():
     def on_all_raw_messages(self, c, e):
         print(e.arguments)
 
+    def on_endofmotd(self, c, e):
+        self.server_connection[c.server]['ready'] = True
+        self.join_pending(c.server)
+
     # fwef
     def on_privnotice(self, c, e):
 
         # Server receive Sever info as privnotice
         # Sever can join channel
-        self.server_connection[c.server]['ready'] = True
-        self.join_pending(c.server)
-
         info = e.arguments[0]
         # bot = e.source.split('!')[0]
 
@@ -290,7 +292,7 @@ if __name__ == '__main__':
     import sys
 
     a = IRCChat()
-    a.add_connection('irc.otaku-irc.fr', 'otc_nick2', 6601, True)
+    a.add_connection('irc.otaku-irc.fr', 'otc_nick3', 6601, True)
     # a.add_connection('irc.criten.net', 'cri_nick4')
     # a.join_channel('irc.criten.net', '#elitewarez')
 
@@ -312,15 +314,8 @@ if __name__ == '__main__':
             # print(a.is_connected('irc.otaku-irc.fr'))
 
             if a.has_joined('irc.otaku-irc.fr', '#serial_us'):
-                if '[SeriaL]Xdcc`BattleStar' in a.dcc_bot:
-                    dcc = a.dcc_bot['[SeriaL]Xdcc`BattleStar']
-                    print('Joined', dcc.eta(), dcc.completed() * 100, dcc.average_speed())
-
-                if not request:
-                    for i in range(95, 160, 2):
-                        a.request_dcc_packet('irc.otaku-irc.fr', '[SeriaL]Xdcc`BattleStar', str(i))
-
+                print('Join !')
                 request = True
             else:
                 print('here')
-                a.join_channel('irc.otaku-irc.fr', '#serial_us')
+                # a.join_channel('irc.otaku-irc.fr', '#serial_us')
