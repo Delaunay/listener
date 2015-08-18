@@ -30,6 +30,7 @@ class IRCChat():
 
         # Multiple Connection
         self.server_connection = {}
+        self.connection_to_server = {}
 
         # DCC Stuff
         self.download_folder = 'C:/ZenBBData/downloads/'
@@ -45,27 +46,22 @@ class IRCChat():
         self.download_end_callback = lambda dcc_connection, info: None
 
         # ping need to be received before sending commands
-        self.ping_received = True
         self.reactor.add_global_handler("all_events", self._dispatcher, -10)
 
     def _dispatcher(self, connection, event):
         """ Dispatch events to on_<event.type> method, if present.  """
-        if self.ping_received:
-            do_nothing = lambda c, e: None
-            method = getattr(self, "on_" + event.type, do_nothing)
-            # print(event.type)
-            method(connection, event)
+        do_nothing = lambda c, e: None
+        method = getattr(self, "on_" + event.type, do_nothing)
+        # print(event.type)
+        method(connection, event)
 
     def on_ping(self, c, e):
-        self.ping_received = True
         self.re_join(c.server)
 
     def on_welcome(self, c, e):
-        self.ping_received = True
         self.re_join(c.server)
 
     def on_motd(self, c, e):
-        self.ping_received = True
         self.re_join(c.server)
 
     # def on_endofmotd(self, c, e):
@@ -99,10 +95,8 @@ class IRCChat():
             else:
                 s.connect(server, port, nick)
 
-            # s.ping()
-            self.server_connection[s.server] = {'server': s, 'channel': set()}
-            # Should I send a Ping ?
-            # s.p
+            self.server_connection[s.server] = {'server': s, 'channel': set(), 'ready': False}
+            # self.connection_to_server[str(s)] = s.server
 
             return s
 
@@ -122,14 +116,21 @@ class IRCChat():
 
             del self.server_connection[server]['old_channel']
 
+    def join_pending(self, server):
+        if 'pending_channel' in self.server_connection[server]:
+            for i in self.server_connection[server]['pending_channel']:
+                self.join_channel(server, i)
+
+            del self.server_connection[server]['pending_channel']
+
     def join_channel(self, server, channel):
-        if self.ping_received:
+        if self.server_connection[server]['ready']:
             self.server_connection[server]['server'].join(channel)
+
+        if 'pending_channel' in self.server_connection[server]:
+            self.server_connection[server]['pending_channel'].add(channel)
         else:
-            if 'old_channel' in self.server_connection[server]:
-                self.server_connection[server]['old_channel'].add(channel)
-            else:
-                self.server_connection[server]['old_channel'] = set(channel)
+            self.server_connection[server]['pending_channel'] = set(channel)
 
     def has_joined(self, server, channel):
         return channel in self.server_connection[server]['channel']
@@ -191,6 +192,9 @@ class IRCChat():
     #=========================
 
     def on_join(self, c, e):
+        if e.target in self.server_connection[c.server]['pending_channel']:
+            self.server_connection[c.server]['pending_channel'].remove(e)
+
         if not e.target in self.server_connection[c.server]['channel']:
             self.server_connection[c.server]['channel'].add(e.target)
 
@@ -243,9 +247,16 @@ class IRCChat():
     def on_all_raw_messages(self, c, e):
         print(e.arguments)
 
+    # fwef
     def on_privnotice(self, c, e):
-        # bot = e.source.split('!')[0]
+
+        # Server receive Sever info as privnotice
+        # Sever can join channel
+        self.server_connection[c.server]['ready'] = True
+        self.join_pending(c.server)
+
         info = e.arguments[0]
+        # bot = e.source.split('!')[0]
 
         if info.find('Sending') > -1:
             # remove from task
