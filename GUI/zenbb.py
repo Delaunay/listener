@@ -75,9 +75,9 @@ class ZenBB(QMainWindow):
         r.type = ftype
 
         r.push_button_action = self.open_info
-        r.best_button(lambda: self.movie_action(FileType.Film, 'BEST'))
-        r.latest_button(lambda: self.movie_action(FileType.Film, 'LAST'))
-        r.popular_button(lambda: self.movie_action(FileType.Film, 'POP'))
+        r.best_button(lambda: self.movie_action(ftype, 'BEST'))
+        r.latest_button(lambda: self.movie_action(ftype, 'LAST'))
+        r.popular_button(lambda: self.movie_action(ftype, 'POP'))
 
         return r
 
@@ -178,13 +178,10 @@ class ZenBB(QMainWindow):
         # TV
         splash.showMessage('Loading latest TV Shows', Qt.AlignCenter, Qt.white)
         self.widget_tv.load_default()
-        # time.sleep(1)
 
         # Anime
         splash.showMessage('Loading latest Anime', Qt.AlignCenter, Qt.white)
         # self.widget_anime.load_default()
-
-        # time.sleep(1)
 
         # Splash End
         self.main_window.show()

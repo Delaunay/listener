@@ -124,13 +124,17 @@ class IRCChat():
             del self.server_connection[server]['pending_channel']
 
     def join_channel(self, server, channel):
+        ch_str = channel
+        if hasattr(channel, 'channel'):
+            ch_str = channel.channel
+
         if self.server_connection[server]['ready']:
-            self.server_connection[server]['server'].join(channel)
+                self.server_connection[server]['server'].join(ch_str)
 
         if 'pending_channel' in self.server_connection[server]:
-            self.server_connection[server]['pending_channel'].add(channel)
+            self.server_connection[server]['pending_channel'].add(ch_str)
         else:
-            self.server_connection[server]['pending_channel'] = set(channel)
+            self.server_connection[server]['pending_channel'] = set(ch_str)
 
     def has_joined(self, server, channel):
         return channel in self.server_connection[server]['channel']

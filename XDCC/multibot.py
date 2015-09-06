@@ -130,7 +130,7 @@ class MultiBot():
                 return r
 
             except irc.client.ServerConnectionError as e:
-                print("    Fail : " + s.url)
+                print("    Fail : " + url)
                 print('        ' + str(e))
                 attemp += 1
 
@@ -388,7 +388,7 @@ if __name__ == '__main__':
     import os
     from populate.irc_server import setup
     # #
-    os.remove(db)
+    #os.remove(db)
     setup(db)
 
     # time.sleep(2*60)
