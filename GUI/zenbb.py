@@ -14,9 +14,10 @@ import time
 
 class ZenBB(QMainWindow):
     """ The main widget is a StackedWidget. There are 6 Permanent Widget
-    Currently only one Temporary Widget is supported since it is deleted after a new temporary is inserted
-    This because there are not way the user could show those temporary once he changes view.
-    The back action only takes the user back one view"""
+    Currently only one Temporary Widget is supported since it is deleted after
+    a new temporary is inserted. This because there are not way the user could
+    show those temporary once he changes view. The back action only takes the
+    user back one view"""
 
     def __init__(self, db=None):
         super(ZenBB, self).__init__()
@@ -26,10 +27,11 @@ class ZenBB(QMainWindow):
 
         # Main Movie Window for search and latest
         self.widget_movie = self.setup_tile_wall(FileType.Film, True)
-        self.widget_tv = self.setup_tile_wall(FileType.TV, True)         # QPushButton('TV Show')
+        self.widget_tv = self.setup_tile_wall(FileType.TV, True)         
+                                                        # QPushButton('TV Show')
 
         # Modules window
-        self.widget_manager = Manager()     # QPushButton('Manager')
+        self.widget_manager = Manager()                 # QPushButton('Manager')
         self.widget_planner = QPushButton('Planner')
         self.widget_config = Configuration()
 
@@ -50,7 +52,8 @@ class ZenBB(QMainWindow):
 
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText('Search ...')
-        self.search_bar.connect(self.search_bar, SIGNAL('returnPressed()'), self.search)
+        self.search_bar.connect(self.search_bar, SIGNAL('returnPressed()'), 
+                                self.search)
 
         self.main_window = self
         self.main_window.setWindowTitle('ZenBB')
@@ -83,7 +86,8 @@ class ZenBB(QMainWindow):
 
     def movie_action(self, ftype, order):
         if self.central_widget.count() > self.n_widget:
-            self.central_widget.removeWidget(self.central_widget.widget(self.n_widget))
+            self.central_widget.removeWidget(
+                            self.central_widget.widget(self.n_widget))
 
         s = self.setup_tile_wall(ftype, True)
         self.central_widget.addWidget(s)
@@ -103,13 +107,15 @@ class ZenBB(QMainWindow):
         self.search_bar.setText('')
 
         if self.central_widget.count() > self.n_widget:
-            self.central_widget.removeWidget(self.central_widget.widget(self.n_widget))
+            self.central_widget.removeWidget(
+                                self.central_widget.widget(self.n_widget))
 
         s = MovieWidget(self.db)
         s.push_button_action = self.open_info
         self.central_widget.addWidget(s)
 
-        s.load_movies(s.search(txt, self.combo_box_value[self.combo_box.currentIndex()]))
+        s.load_movies(s.search(txt, 
+                self.combo_box_value[self.combo_box.currentIndex()]))
         self._update_central_widget(self.n_widget)
 
     def _update_central_widget(self, idx):
@@ -124,7 +130,8 @@ class ZenBB(QMainWindow):
         action.connect(action, SIGNAL('triggered()'), lambda: self._update_central_widget(idx))
 
         if idx < 3:
-            action.connect(action, SIGNAL('triggered()'), lambda: self.combo_box.setCurrentIndex(idx))
+            action.connect(action, SIGNAL('triggered()'), 
+                    lambda: self.combo_box.setCurrentIndex(idx))
         self.tool_bar.addAction(action)
 
     def _set_tool_bar(self):
@@ -153,7 +160,8 @@ class ZenBB(QMainWindow):
 
     def open_info(self, movie):
         if self.central_widget.count() > self.n_widget:
-            self.central_widget.removeWidget(self.central_widget.widget(self.n_widget))
+            self.central_widget.removeWidget(
+                        self.central_widget.widget(self.n_widget))
 
         info = InfoWidget(movie, db=self.db)
         info.download_action_callback = self.download_action
@@ -212,3 +220,4 @@ if __name__ == '__main__':
     set_style(app)
 
     sys.exit(app.exec_())
+

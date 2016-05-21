@@ -32,7 +32,6 @@ def setup(db2='I:/my_db.db'):
     connection = [
             ("irc.1andallIRC.net",      False, 6667,        "dbbld", ["#cosmic"]),
             ("irc.eu.abjects.net",      True,  9999,        "dbbld", ["#moviegods", "#beast-xdcc"]),
-            ("irc.abandoned-irc.net",   False, 6667,        "dbbld", ["#porn-hq", "#zombie-warez"]),
             ("irc.rizon.net",           True,  9999,        "dbbld", ["#1warez"]),
             ("irc.xerologic.net",       True,  6697,        "dbbld", ["#warez"]),
             # ("irc.otaku-irc.net",       True,  6601,        "dbbld", ["#serial_us"]),

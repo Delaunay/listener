@@ -20,7 +20,7 @@ class Limit(Enum):
 
 class TMDbAPY():
     """ keep tracks of request per 10 seconds, do everything to avoid request failure,
-        wait if to many request were placed"""
+        wait if too many request were placed"""
 
     def __init__(self, api_key, policy=Limit.Sleep):
         self.key = api_key
